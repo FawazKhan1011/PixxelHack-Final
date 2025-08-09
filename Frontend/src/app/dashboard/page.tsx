@@ -23,6 +23,7 @@ interface Assessment {
 
 export default function DashboardPage() {
   const { user } = useUser();
+  const router = useRouter();
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeModule, setActiveModule] = useState<string>('Dashboard');
@@ -45,23 +46,26 @@ export default function DashboardPage() {
   const lastAssessment = assessments[assessments.length - 1];
 
   const modules = [
-    { id: 'Dashboard', icon: '🏠' },
+    { id: 'Dashboard', icon: '🏠', href: '/' },
     { id: 'Quick Assessment', icon: '📝', href: '/assess' },
-    { id: 'AI Chat', icon: '💬', href: '/chat' },
-    { id: 'Meditation', icon: '🧘' },
-    { id: 'Personal Diary', icon: '📔' },
+    { id: 'AI Chat', icon: '💬', href: '/ai' },
+    { id: 'Meditation', icon: '🧘', href: '/meditation' },
+    { id: 'Personal Diary', icon: '📔', href: '/diary' },
     { id: 'Resources', icon: '📚', href: '/resources' },
     { id: 'Profile', icon: '👤', href: '/profile' },
-    { id: 'Admin', icon: '⚙️' },
+    { id: 'Admin', icon: '⚙️', href: '/admin' },
   ];
 
-  const handleModuleClick = (m: string) => {
-    setActiveModule(m);
+  const handleModuleClick = (m: { id: string; href?: string }) => {
+    setActiveModule(m.id);
+    if (m.href) {
+      window.location.assign(m.href);
+    }
   };
 
   const MOTIVATIONS = [
     "Take one small step today — you matter.",
-    "Breath in calm — breathe out worry.",
+    "Breathe in calm — breathe out worry.",
     "Progress isn't linear. Be kind to yourself today.",
   ];
   const randomMot = MOTIVATIONS[Math.floor(Math.random() * MOTIVATIONS.length)];
@@ -70,14 +74,13 @@ export default function DashboardPage() {
     <div className="ya-dashboard">
       <aside className={`ya-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="ya-sidebar-top">
-            <div className="ya-logo-text">You Matter</div>
-
+          <div className="ya-logo-text">{sidebarOpen ? 'You Matter' : 'YM'}</div>
           {/* <button
             className="ya-collapse-btn"
             onClick={() => setSidebarOpen((s) => !s)}
             aria-label="Toggle sidebar"
           >
-            {sidebarOpen ? '«' : '»'}
+            {sidebarOpen ? '«' : '☰'}
           </button> */}
         </div>
 
@@ -87,10 +90,10 @@ export default function DashboardPage() {
               <li
                 key={m.id}
                 className={`ya-nav-item ${activeModule === m.id ? 'active' : ''}`}
-                onClick={() => handleModuleClick(m.id)}
+                onClick={() => handleModuleClick(m)}
               >
                 <span className="ya-nav-icon">{m.icon}</span>
-                <span className="ya-nav-label">{sidebarOpen ? m.id : ''}</span>
+                {sidebarOpen && <span className="ya-nav-label">{m.id}</span>}
               </li>
             ))}
           </ul>
@@ -98,11 +101,12 @@ export default function DashboardPage() {
 
         <div className="ya-sidebar-bottom">
           <div className="ya-utilities">
-            {/* <ThemeToggle />
-            <UserButton /> */}
+            {/* <ThemeToggle /> */}
+            {/* <UserButton /> */}
           </div>
         </div>
       </aside>
+
 
       <main className="ya-main">
         <header className="ya-header">
@@ -114,12 +118,14 @@ export default function DashboardPage() {
           >
           </motion.div>
 
-          <div className="ya-header-right">
-            <Button asChild>
-              <Link href="/assess">Start Quick Check</Link>
-            </Button>
-            <UserButton/>
-          </div>
+          <div className="ya-header-right flex items-center gap-4">
+  <Button>
+    <Link href="/assess">Start Quick Check</Link>
+  </Button>
+  <div className="userbutton">
+    <UserButton />
+  </div>
+</div>
         </header>
 
         <section className="ya-grid">
@@ -182,13 +188,6 @@ export default function DashboardPage() {
   <h2 className="text-2xl font-bold mb-2">You Matter Chatbot</h2>
 
   {/* Logo */}
-  {/* <Image
-  src={Chatimg}
-  alt="MindAnchor Logo"
-  width={64}
-  height={64}
-  className="mx-auto mb-4"
-/> */}
 <center>
   <Bot 
   width={64}
@@ -208,14 +207,13 @@ export default function DashboardPage() {
   {/* Quick Prompts */}
   <p className="text-sm text-muted-foreground mb-2">Try quick prompts:</p>
   <div className="flex flex-wrap justify-center gap-2">
-    {["Breathing", "Coping Tips", "7-day Plan"].map((prompt) => (
+    {["Breathing Techniques", "Coping Tips", "7-day Plan for Stress Relief"].map((prompt) => (
       <Button 
         key={prompt}
         size="sm"
         variant="secondary"
-        onClick={() => window.location.assign(`/chat?q=${encodeURIComponent(prompt)}`)}
-      >
-        {prompt}
+        onClick={() => router.push(`/ai?q=${encodeURIComponent(prompt)}`)}
+      >{prompt}
       </Button>
     ))}
   </div>

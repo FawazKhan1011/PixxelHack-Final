@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Mic, MicOff, Send, Bot, User, Plus, Menu } from 'lucide-react';
 import '../../styles/ai.css';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { useSearchParams } from 'next/navigation';
 
 // Load API key from environment
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
@@ -29,6 +30,7 @@ interface CustomSpeechRecognitionEvent extends Event {
 
 // ---- Chat Page ----
 const ChatPage = () => {
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const exitToDashboard = () => {
@@ -52,6 +54,19 @@ const ChatPage = () => {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const hasHandledQuery = useRef(false);
+
+  useEffect(() => {
+  if (hasHandledQuery.current) return;
+
+  const promptFromQuery = searchParams.get('q');
+  if (promptFromQuery) {
+    setInput(promptFromQuery);
+    handleSend(promptFromQuery);
+    hasHandledQuery.current = true;
+  }
+}, [searchParams]);
 
   // Setup SpeechRecognition
   useEffect(() => {
