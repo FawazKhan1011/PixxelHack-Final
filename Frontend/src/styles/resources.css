@@ -1,126 +1,174 @@
+/* Resources Page Styles - Wellness Theme Inspired */
+
+:root {
+  /* Wellness palette */
+  --wellness-primary: hsl(280, 75%, 60%);
+  --wellness-primary-light: hsl(285, 85%, 85%);
+  --wellness-primary-dark: hsl(275, 65%, 45%);
+  --wellness-secondary: hsl(320, 50%, 85%);
+  --wellness-muted-bg: hsl(300, 20%, 95%);
+  --wellness-border: hsl(300, 20%, 90%);
+  --wellness-text: hsl(222, 84%, 5%);
+  --wellness-text-muted: hsl(280, 15%, 45%);
+  --wellness-bg: hsl(0, 0%, 100%);
+  --wellness-shadow: 0 10px 40px -10px hsla(280, 75%, 60%, 0.15);
+  --wellness-shadow-soft: 0 2px 10px hsla(280, 75%, 60%, 0.1);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --gradient-calm: linear-gradient(180deg, hsl(285, 85%, 95%) 0%, hsl(300, 70%, 98%) 100%);
+}
+
+/* Main page container */
 .resources-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  position: relative;
+  background: var(--gradient-calm);
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  color: var(--wellness-text);
+}
+
+/* Header Section */
+.resources-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  color: var(--wellness-primary-dark);
+}
+
+.resources-header h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.resources-header p {
+  font-size: 1.1rem;
+  color: var(--wellness-text-muted);
+  margin: 0;
+}
+
+/* Section Titles */
+.resources-list > h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--wellness-primary);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--wellness-primary-light);
+  padding-bottom: 0.25rem;
+  max-width: 700px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Cards container */
+.resources-list {
+  max-width: 720px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Individual resource card */
+.resource-card {
+  box-shadow: var(--wellness-shadow-soft);
+  border-radius: 1rem;
+  background: var(--wellness-bg);
+  border: 1px solid var(--wellness-border);
+  transition: var(--transition-smooth);
+  cursor: default;
   overflow: hidden;
-  background: linear-gradient(to right, #a855f7, #ec4899, #3b82f6);
-  transition: background 0.3s;
 }
 
-body.dark-theme .resources-page {
-  background: linear-gradient(to right, #4a2a6d, #9c3366, #2a5a8f);
+.resource-card:hover {
+  box-shadow: var(--wellness-shadow);
+  transform: translateY(-4px);
 }
 
-/* Particle background */
-.particles-background {
+/* Card Header */
+.resource-card > .ui-card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--wellness-border);
+  background: var(--wellness-primary-light);
+  color: var(--wellness-primary-dark);
+  font-weight: 700;
+  font-size: 1.25rem;
+  user-select: none;
+}
+
+/* Card Content */
+.resource-card > .ui-card-content {
+  padding: 1rem 1.5rem 1.5rem;
+  color: var(--wellness-text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Read More Link */
+.resource-link {
+  display: inline-block;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: var(--wellness-primary);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition-smooth);
+}
+
+.resource-link:hover,
+.resource-link:focus {
+  border-color: var(--wellness-primary-dark);
+  outline: none;
+}
+
+/* Video cards adjustments */
+.video-card .ui-card-content {
+  padding: 1rem 1.5rem 2rem;
+}
+
+/* Responsive video embed */
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: var(--wellness-shadow-soft);
+  margin-top: 0.75rem;
+}
+
+.video-wrapper iframe {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
-}
-
-/* Container */
-.resources-container {
-  max-width: 36rem;
-  width: 100%;
-  z-index: 2;
-}
-
-/* Card */
-.resources-card {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 15px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  padding: 1.5rem;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: background 0.3s, box-shadow 0.3s;
-}
-
-body.dark-theme .resources-card {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-}
-
-/* Filter section */
-.filter-section {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.search-input {
-  flex-grow: 1;
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transition: background 0.3s, border-color 0.3s;
-}
-
-body.dark-theme .search-input {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.category-filter {
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transition: background 0.3s, border-color 0.3s;
-}
-
-body.dark-theme .category-filter {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Resource item */
-.resource-item {
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  transition: background 0.3s;
-}
-
-.resource-item h3 {
-  color: white;
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
-}
-
-.resource-item p {
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0.5rem;
-}
-
-body.dark-theme .resource-item {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-body.dark-theme .resource-item h3,
-body.dark-theme .resource-item p {
-  color: #d1d5db;
-}
-
-/* Buttons */
-.resource-item button {
-  margin-right: 0.5rem;
-  background: linear-gradient(to right, #ec4899, #3b82f6);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   border: none;
-  transition: background 0.3s;
 }
 
-body.dark-theme .resource-item button {
-  background: linear-gradient(to right, #b854c6, #5a8cf6);
+/* Responsive layout tweaks */
+@media (max-width: 768px) {
+  .resources-list {
+    max-width: 100%;
+  }
+
+  .resources-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .resources-list > h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Accessibility focus */
+.resource-link:focus-visible {
+  outline: 3px solid var(--wellness-primary);
+  outline-offset: 3px;
 }

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import "../../styles/meditation.css";
+import router from "next/router";
 
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
@@ -64,7 +65,9 @@ const Meditation = () => {
       audioRef.current = null;
     };
   }, []);
-
+  const exitToDashboard = () => {
+    router.push('/dashboard');
+  };
   // Timer + breathing phase
   useEffect(() => {
     if (!isRunning) {

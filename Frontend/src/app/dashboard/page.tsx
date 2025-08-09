@@ -12,6 +12,7 @@ import Chatimg from "../../img/chat.png";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { Bot } from 'lucide-react';
+import { Book } from "lucide-react"; // make sure to import Book icon
 
 // Define interface for assessment data
 interface Assessment {
@@ -52,8 +53,6 @@ export default function DashboardPage() {
     { id: 'Meditation', icon: '🧘', href: '/meditation' },
     { id: 'Personal Diary', icon: '📔', href: '/diary' },
     { id: 'Resources', icon: '📚', href: '/resources' },
-    { id: 'Profile', icon: '👤', href: '/profile' },
-    { id: 'Admin', icon: '⚙️', href: '/admin' },
   ];
 
   const handleModuleClick = (m: { id: string; href?: string }) => {
@@ -171,7 +170,7 @@ export default function DashboardPage() {
 
               <div className="motivation">
                 <div className="mot-text">{randomMot}</div>
-                <Button onClick={() => alert('Play quick breathing...')}>Do a 1-min breathing</Button>
+                <Button onClick={() => window.location.assign('/meditation')}>Do a 2-min breathing</Button>
               </div>
             </div>
           </motion.section>
@@ -258,28 +257,33 @@ export default function DashboardPage() {
   </Card>
 </motion.section>
 
-  <motion.section
-    layout
-    className="ya-card resources-card"
-    initial={{ opacity: 0, y: 6 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay: 0.15 }}
-  >
-    <CardHeader>
+<motion.section
+  layout
+  className="ya-card resources-card"
+  initial={{ opacity: 0, y: 6 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.15 }}
+>
+  <CardHeader style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+    <Book className="book-icon" size={24} />
+    <div>
       <CardTitle>Resources</CardTitle>
       <p className="card-sub">Curated articles, helplines & videos</p>
-    </CardHeader>
-            <CardContent>
-              <ul className="resource-list">
-                <li><a href="#" onClick={(e) => e.preventDefault()}>Grounding exercise — 5 steps</a></li>
-                <li><a href="#" onClick={(e) => e.preventDefault()}>Sleep hygiene tips</a></li>
-                <li><a href="#" onClick={(e) => e.preventDefault()}>Local helplines & emergency</a></li>
-              </ul>
-              <div className="resource-cta">
-                <Button onClick={() => window.location.assign('/resources')}>Open Library</Button>
-              </div>
-            </CardContent>
-          </motion.section>
+    </div>
+  </CardHeader>
+
+  <CardContent>
+    <div className="resource-detail-text" style={{ marginBottom: "1rem" }}>
+      Articles and resources to support your wellness journey.
+    </div>
+
+    <div className="resource-cta">
+      <Button onClick={() => window.location.assign('/resources')}>
+        Open Library
+      </Button>
+    </div>
+  </CardContent>
+</motion.section>
 
           <motion.section
             layout
