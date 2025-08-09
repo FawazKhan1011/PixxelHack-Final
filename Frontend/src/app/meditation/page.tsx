@@ -1,97 +1,199 @@
-// 'use client';
+"use client";
 
-// import { useState, useEffect, useRef } from 'react';
-// import { motion } from 'framer-motion';
-// import { Button } from '@/components/ui/button';
-// import { Card, CardContent } from '@/components/ui/card';
-// import '../../styles/meditation.css';
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import "../../styles/meditation.css";
 
-// const MeditationPage = () => {
-//   const [time, setTime] = useState<number>(5 * 60);
-//   const [isRunning, setIsRunning] = useState<boolean>(false);
-//   const [waveHeight, setWaveHeight] = useState<number>(50);
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+};
 
-//   const audioRef = useRef<HTMLAudioElement | null>(null);
+const Meditation = () => {
+  const [selectedMinutes, setSelectedMinutes] = useState<number>(5);
+  const [timeLeft, setTimeLeft] = useState<number>(selectedMinutes * 60);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [breathText, setBreathText] = useState<string>("Breathe in...");
 
-//   // Create audio only in browser
-//   useEffect(() => {
-//     if (typeof window !== 'undefined') {
-//       const audioInstance = new Audio('/soothing-track.mp3');
-//       audioInstance.onerror = () => console.error('Audio file failed to load');
-//       audioRef.current = audioInstance;
-//     }
-//   }, []);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const tickRef = useRef<number | null>(null);
+  const phaseTimerRef = useRef<number | null>(null);
+  const phaseRef = useRef<"in" | "out">("in");
 
-//   useEffect(() => {
-//     let timer: NodeJS.Timeout;
-//     if (isRunning && time > 0) {
-//       timer = setInterval(() => {
-//         setTime((prev) => prev - 1);
-//         setWaveHeight((prev) => (prev === 50 ? 100 : 50));
-//       }, 1000);
-//     } else if (time === 0) {
-//       setIsRunning(false);
-//       audioRef.current?.pause();
-//     }
-//     return () => clearInterval(timer);
-//   }, [isRunning, time]);
+  // SEO basics for SPA
+  useEffect(() => {
+    document.title = "Meditation Timer | Wellness Breathing";
+    const descContent =
+      "Guided meditation timer with breathing ring animation and soothing loop.";
+    let desc = document.querySelector('meta[name="description"]');
+    if (!desc) {
+      desc = document.createElement("meta");
+      desc.setAttribute("name", "description");
+      document.head.appendChild(desc);
+    }
+    desc.setAttribute("content", descContent);
 
-//   const handlePlayPause = () => {
-//     if (!audioRef.current) return;
+    let canonical = document.querySelector('link[rel="canonical"]') as
+      | HTMLLinkElement
+      | null;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = window.location.href;
+  }, []);
 
-//     if (isRunning) {
-//       setIsRunning(false);
-//       audioRef.current.pause();
-//     } else {
-//       setIsRunning(true);
-//       audioRef.current
-//         .play()
-//         .catch((error) => console.error('Audio play failed:', error));
-//     }
-//   };
+  // Keep time in sync when preset changes
+  useEffect(() => {
+    if (!isRunning) setTimeLeft(selectedMinutes * 60);
+  }, [selectedMinutes, isRunning]);
 
-//   const formatTime = (seconds: number) => {
-//     const mins = Math.floor(seconds / 60);
-//     const secs = seconds % 60;
-//     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-//   };
+  // Prepare audio (looping)
+  useEffect(() => {
+    const a = new Audio("/breath.mp3");
+    a.preload = "auto";
+    a.loop = true;
+    a.onerror = () => console.error("Audio file failed to load");
+    audioRef.current = a;
+    return () => {
+      a.pause();
+      audioRef.current = null;
+    };
+  }, []);
 
-//   const handleCustomTime = () => {
-//     const input = prompt('Enter minutes');
-//     const minutes = input ? parseInt(input, 10) : 5;
-//     setTime(minutes * 60 || 5 * 60);
-//   };
+  // Timer + breathing phase
+  useEffect(() => {
+    if (!isRunning) {
+      if (tickRef.current) {
+        clearInterval(tickRef.current);
+        tickRef.current = null;
+      }
+      if (phaseTimerRef.current) {
+        clearInterval(phaseTimerRef.current);
+        phaseTimerRef.current = null;
+      }
+      return;
+    }
 
-//   return (
-//     <div className="meditation-page">
-//       <motion.div
-//         className="meditation-container"
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.5 }}
-//       >
-//         <Card className="meditation-card">
-//           <CardContent className="meditation-content">
-//             <h1 className="meditation-title">Meditation Session</h1>
-//             <div className="timer">{formatTime(time)}</div>
-//             <motion.div
-//               className="wave-animation"
-//               animate={{ height: waveHeight }}
-//               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-//             />
-//             <div className="controls">
-//               <Button onClick={() => setTime(5 * 60)}>5m</Button>
-//               <Button onClick={() => setTime(10 * 60)}>10m</Button>
-//               <Button onClick={handleCustomTime}>Custom</Button>
-//               <Button onClick={handlePlayPause}>
-//                 {isRunning ? 'Pause' : 'Play'}
-//               </Button>
-//             </div>
-//           </CardContent>
-//         </Card>
-//       </motion.div>
-//     </div>
-//   );
-// };
+    tickRef.current = window.setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setIsRunning(false);
+          audioRef.current?.pause();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-// export default MeditationPage;
+    phaseTimerRef.current = window.setInterval(() => {
+      phaseRef.current = phaseRef.current === "in" ? "out" : "in";
+      setBreathText(
+        phaseRef.current === "in" ? "Breathe in..." : "Breathe out..."
+      );
+    }, 6000);
+
+    return () => {
+      if (tickRef.current) clearInterval(tickRef.current);
+      if (phaseTimerRef.current) clearInterval(phaseTimerRef.current);
+    };
+  }, [isRunning]);
+
+  const start = () => {
+    if (timeLeft === 0) setTimeLeft(selectedMinutes * 60);
+    setIsRunning(true);
+    audioRef.current
+      ?.play()
+      .catch((e) => console.error("Audio play failed:", e));
+  };
+
+  const stop = () => {
+    setIsRunning(false);
+    audioRef.current?.pause();
+  };
+
+  const reset = () => {
+    setIsRunning(false);
+    setTimeLeft(selectedMinutes * 60);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    phaseRef.current = "in";
+    setBreathText("Breathe in...");
+  };
+
+  return (
+    <main className="meditation-page" role="main">
+      <motion.section
+        layout
+        className="ya-card meditation-card"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05 }}
+      >
+        <Card className="max-w-xl mx-auto text-center p-6 glass-card">
+          <CardContent className="space-y-5">
+            <header>
+              <h1 className="meditation-title">Meditation Timer</h1>
+            </header>
+
+            <div className="timer" aria-live="polite" aria-atomic>
+              {formatTime(timeLeft)}
+            </div>
+
+            <div
+              className={`breath-container ${isRunning ? "is-playing" : ""}`}
+              aria-label="Breathing animation"
+              role="img"
+            >
+              <div className="breath-ring" />
+              <div className="breath-text">{breathText}</div>
+            </div>
+
+            <section className="controls" aria-label="Timer presets">
+              <div className="preset-row">
+                <Button
+                  variant={selectedMinutes === 2 ? "default" : "secondary"}
+                  onClick={() => setSelectedMinutes(2)}
+                >
+                  2 min
+                </Button>
+                <Button
+                  variant={selectedMinutes === 5 ? "default" : "secondary"}
+                  onClick={() => setSelectedMinutes(5)}
+                >
+                  5 min
+                </Button>
+                <Button
+                  variant={selectedMinutes === 10 ? "default" : "secondary"}
+                  onClick={() => setSelectedMinutes(10)}
+                >
+                  10 min
+                </Button>
+              </div>
+
+              <div className="action-row">
+                <Button onClick={start} size="lg">
+                  Start
+                </Button>
+                <Button onClick={stop} variant="secondary" size="lg">
+                  Stop
+                </Button>
+                <Button onClick={reset} variant="outline" size="lg">
+                  Reset
+                </Button>
+              </div>
+            </section>
+          </CardContent>
+        </Card>
+      </motion.section>
+    </main>
+  );
+};
+
+export default Meditation;

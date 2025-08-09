@@ -222,7 +222,7 @@ body{
 /* button{ transition: transform .12s ease, box-shadow .12s ease; }
 button:hover{ transform: translateY(-2px); } */
 button{
-  /* color: linear-gradient(to right, #de93fa, #cbbef8, #dee6f9, #96e3f9); */
+  /* color: linear-gradient(to right, #de93fa, #cbbef8, #dee6f9, #96e3f9);   */
 }
 button:hover{
   cursor: pointer;
@@ -236,4 +236,37 @@ button:hover{
   .ya-grid{ grid-template-columns: 1fr; }
   .ya-main{ padding:16px; }
   .ya-sidebar{ display:none; }
+}
+.lottie-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+}
+
+.breath-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(100, 149, 237, 0.2);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.breath-text {
+  margin-top: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Simple pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
 }

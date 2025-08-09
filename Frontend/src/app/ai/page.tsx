@@ -112,7 +112,7 @@ You will only answer questions related to mental health, self-care,
 emotional support, stress management, mindfulness, and healthy habits.
 If a user asks something unrelated to health or wellness, politely
 redirect them back to wellness topics.
-Keep your responses kind, warm, and encouraging.`;
+Keep your responses kind, warm, and encouraging.There will be some short instructions which are not sentences or questions so you apply the logic to understand what they are asking and give the appropriate response to it`;
 
       const result = await model.generateContent([
         { text: systemPrompt },

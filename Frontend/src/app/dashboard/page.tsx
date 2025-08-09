@@ -145,7 +145,7 @@ export default function DashboardPage() {
                 </svg>
               </div>
               <div className="profile-name">
-                <strong>{user?.firstName+ ' ' + user?.lastName}</strong>
+                <strong>{user?.firstName}</strong>
 
                 <div className="profile-sub">YouMatter member</div>
               </div>
@@ -219,42 +219,56 @@ export default function DashboardPage() {
   </div>
 </Card>
           </motion.section>
+<motion.section
+  layout
+  className="ya-card meditation-card"
+  initial={{ opacity: 0, y: 6 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, delay: 0.05 }}
+>
+  <Card className="max-w-md mx-auto text-center p-4">
+    {/* Heading */}
+    <h2 className="text-2xl font-bold mb-2">Meditation</h2>
 
-          <motion.section
-            layout
-            className="ya-card breathing-card"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.1 }}
-          >
-            <CardHeader>
-              <CardTitle>Calming Micro-UX</CardTitle>
-              <p className="card-sub">Lottie breathing + ambient audio</p>
-            </CardHeader>
-            <CardContent>
-              <div className="lottie-placeholder" role="img" aria-label="Breathing animation placeholder">
-                <div className="breath-ring" />
-                <div className="breath-text">Breathe in... out</div>
-              </div>
+    {/* Lottie / Animation Placeholder */}
+    <div
+      className="lottie-placeholder mb-4"
+      role="img"
+      aria-label="Breathing animation placeholder"
+    >
+      
+      <div className="breath-ring" />
+      <br />
+      <div className="breath-text">Breathe in... out</div>
+    </div>
+    
+    {/* Description */}
+    <p className="text-sm text-muted-foreground mb-4">
+      Practice your meditation now with deep breathing and mindful focus.
+    </p>
 
-              <div className="micro-actions">
-                <Button onClick={() => alert('Start breathing animation')}>Start</Button>
-                <Button variant="outline" onClick={() => alert('Play ambient audio')}>Play sound</Button>
-              </div>
-            </CardContent>
-          </motion.section>
+    {/* Start Meditation Button */}
+    <Button
+      size="lg"
+      className="w-full"
+      onClick={() => window.location.assign('/meditation')}
+    >
+      Begin Meditation
+    </Button>
+  </Card>
+</motion.section>
 
-          <motion.section
-            layout
-            className="ya-card resources-card"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-          >
-            <CardHeader>
-              <CardTitle>Resources</CardTitle>
-              <p className="card-sub">Curated articles, helplines & videos</p>
-            </CardHeader>
+  <motion.section
+    layout
+    className="ya-card resources-card"
+    initial={{ opacity: 0, y: 6 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 0.15 }}
+  >
+    <CardHeader>
+      <CardTitle>Resources</CardTitle>
+      <p className="card-sub">Curated articles, helplines & videos</p>
+    </CardHeader>
             <CardContent>
               <ul className="resource-list">
                 <li><a href="#" onClick={(e) => e.preventDefault()}>Grounding exercise — 5 steps</a></li>
