@@ -17,13 +17,6 @@ interface SpeechRecognitionResult {
   confidence: number;
 }
 
-interface SpeechRecognitionResultList {
-  [index: number]: SpeechRecognitionResult[];
-  length: number;
-}
-
-// Removed unused CustomSpeechRecognitionEvent interface
-
 const ChatClient = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -42,6 +35,7 @@ const ChatClient = () => {
   const [input, setInput] = useState('');
   const [listening, setListening] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSpeechSupported, setIsSpeechSupported] = useState(true); // New state for speech support
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -67,15 +61,12 @@ const ChatClient = () => {
   // Setup SpeechRecognition
   useEffect(() => {
     type SpeechRecognitionConstructor = new () => SpeechRecognition;
-
-    // Instead of `any`, define an interface for window with optional properties
     type WindowWithSpeechRecognition = Window & {
-  SpeechRecognition?: SpeechRecognitionConstructor;
-  webkitSpeechRecognition?: SpeechRecognitionConstructor;
-};
+      SpeechRecognition?: SpeechRecognitionConstructor;
+      webkitSpeechRecognition?: SpeechRecognitionConstructor;
+    };
 
-const win = window as WindowWithSpeechRecognition;
-
+    const win = window as WindowWithSpeechRecognition;
     const SpeechRecognitionConstructor = win.SpeechRecognition || win.webkitSpeechRecognition;
 
     if (SpeechRecognitionConstructor) {
@@ -90,7 +81,21 @@ const win = window as WindowWithSpeechRecognition;
         setListening(false);
       };
 
+      recognition.onerror = () => {
+        setListening(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'bot',
+            text: "Sorry, there was an issue with voice recognition. Please try again or type your message.",
+            timestamp: new Date(),
+          },
+        ]);
+      };
+
       recognitionRef.current = recognition;
+    } else {
+      setIsSpeechSupported(false); // Handle unsupported browsers
     }
   }, []);
 
@@ -146,9 +151,18 @@ Keep your responses kind, warm, and encouraging.`;
   };
 
   const startVoice = () => {
-    if (recognitionRef.current && !listening) {
+    if (recognitionRef.current && !listening && isSpeechSupported) {
       setListening(true);
       recognitionRef.current.start();
+    } else if (!isSpeechSupported) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'bot',
+          text: "Voice recognition is not supported in this browser. Please type your message instead.",
+          timestamp: new Date(),
+        },
+      ]);
     }
   };
 
@@ -277,7 +291,7 @@ Keep your responses kind, warm, and encouraging.`;
                   className="voice-btn"
                   variant={listening ? 'destructive' : 'outline'}
                   onClick={startVoice}
-                  disabled={listening}
+                  disabled={listening || !isSpeechSupported}
                   title="Speak"
                 >
                   {listening ? <MicOff className="btn-icon-small" /> : <Mic className="btn-icon-small" />}
