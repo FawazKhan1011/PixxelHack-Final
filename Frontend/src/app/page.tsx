@@ -15,7 +15,7 @@ export default function HomePage() {
       const hasTaken = localStorage.getItem(`hasTakenAssessment_${user.id}`);
 
       if (!hasTaken) {
-        router.replace("/assessment");
+        router.replace("/assess");
       } else {
         router.replace("/dashboard");
       }
