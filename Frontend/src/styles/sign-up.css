@@ -1,0 +1,46 @@
+/* Sign-up page styles */
+.sign-up-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #de93fa, #cbbef8, #dee6f9, #96e3f9); /* purple-500, pink-500, blue-500 */
+}
+
+/* Clerk button styles */
+.clerk-button {
+  background: linear-gradient(to right, #ec4899, #3b82f6); /* pink-500 to blue-500 */
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.clerk-button:hover {
+  transform: scale(1.05);
+}
+
+/* Clerk input styles */
+.clerk-form input {
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.clerk-form input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #a855f7; /* purple-500 */
+}
+
+/* Clerk form container */
+.clerk-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

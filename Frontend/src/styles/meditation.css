@@ -1,0 +1,80 @@
+.meditation-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to right, #a855f7, #ec4899, #3b82f6);
+}
+
+.particles-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.meditation-container {
+  max-width: 36rem;
+  width: 100%;
+  z-index: 2;
+}
+
+.meditation-card {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.meditation-content {
+  text-align: center;
+}
+
+.meditation-title {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+  transition: color 0.3s;
+}
+
+.timer {
+  font-size: 3rem;
+  color: white;
+  margin-bottom: 2rem;
+  transition: color 0.3s;
+}
+
+.wave-animation {
+  width: 100%;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  margin-bottom: 2rem;
+  transition: height 0.3s;
+}
+
+.controls button {
+  margin: 0 0.5rem;
+  transition: background 0.3s;
+}
+
+body.dark-theme .meditation-card {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .meditation-title,
+body.dark-theme .timer {
+  color: #e5e7eb;
+}
+
+body.dark-theme .wave-animation {
+  background: rgba(255, 255, 255, 0.3);
+}
