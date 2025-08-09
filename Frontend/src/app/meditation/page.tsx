@@ -1,44 +1,52 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import '../../styles/meditation.css';
 
 const MeditationPage = () => {
-  const [time, setTime] = useState<number>(5 * 60); // 5 minutes in seconds, typed
+  const [time, setTime] = useState<number>(5 * 60);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [waveHeight, setWaveHeight] = useState<number>(50); // Inhale/exhale cue, typed
+  const [waveHeight, setWaveHeight] = useState<number>(50);
 
-  // Initialize audio with error handling
-  const [audio] = useState<HTMLAudioElement>(() => {
-    const audioInstance = new Audio('/soothing-track.mp3');
-    audioInstance.onerror = () => console.error('Audio file failed to load');
-    return audioInstance;
-  });
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Create audio only in browser
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const audioInstance = new Audio('/soothing-track.mp3');
+      audioInstance.onerror = () => console.error('Audio file failed to load');
+      audioRef.current = audioInstance;
+    }
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isRunning && time > 0) {
       timer = setInterval(() => {
         setTime((prev) => prev - 1);
-        setWaveHeight((prev) => (prev === 50 ? 100 : 50)); // Wave animation
+        setWaveHeight((prev) => (prev === 50 ? 100 : 50));
       }, 1000);
     } else if (time === 0) {
       setIsRunning(false);
-      audio.pause();
+      audioRef.current?.pause();
     }
     return () => clearInterval(timer);
-  }, [isRunning, time, audio]);
+  }, [isRunning, time]);
 
   const handlePlayPause = () => {
+    if (!audioRef.current) return;
+
     if (isRunning) {
       setIsRunning(false);
-      audio.pause();
+      audioRef.current.pause();
     } else {
       setIsRunning(true);
-      audio.play().catch((error) => console.error('Audio play failed:', error));
+      audioRef.current
+        .play()
+        .catch((error) => console.error('Audio play failed:', error));
     }
   };
 
@@ -50,8 +58,8 @@ const MeditationPage = () => {
 
   const handleCustomTime = () => {
     const input = prompt('Enter minutes');
-    const minutes = input ? parseInt(input, 10) : 5; // Default to 5 if invalid or null
-    setTime(minutes * 60 || 5 * 60); // Fallback to 5 minutes if conversion fails
+    const minutes = input ? parseInt(input, 10) : 5;
+    setTime(minutes * 60 || 5 * 60);
   };
 
   return (
@@ -75,7 +83,9 @@ const MeditationPage = () => {
               <Button onClick={() => setTime(5 * 60)}>5m</Button>
               <Button onClick={() => setTime(10 * 60)}>10m</Button>
               <Button onClick={handleCustomTime}>Custom</Button>
-              <Button onClick={handlePlayPause}>{isRunning ? 'Pause' : 'Play'}</Button>
+              <Button onClick={handlePlayPause}>
+                {isRunning ? 'Pause' : 'Play'}
+              </Button>
             </div>
           </CardContent>
         </Card>
