@@ -1,13 +1,27 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
 import { supabase } from "./db.js";
+import authRoutes from "./routes/auth.js";
+import { authenticateToken } from "./middleware/auth.js";
+import profileRoutes from "./routes/profile.js";
+import assessmentRoutes from "./routes/assessments.js";
+import aiProxyRoutes from "./routes/aiProxy.js";
+
+
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/api/profile", profileRoutes);
+app.use("/api/assessments", assessmentRoutes);
+app.use("/api/ai", aiProxyRoutes);
+
+// Auth routes
+app.use("/api/auth", authRoutes);
 
 // Health check route
 app.get("/api/health", (req, res) => {
@@ -24,12 +38,13 @@ app.get("/api/test-db", async (req, res) => {
 });
 
 /**
- * Create a new project
+ * Create a new project (protected)
  */
-app.post("/api/projects", async (req, res) => {
-  const { title, description, image_url, user_id } = req.body;
+app.post("/api/projects", authenticateToken, async (req, res) => {
+  const { title, description, image_url } = req.body;
+  const user_id = req.user.id;  // get user id from JWT payload
 
-  if (!title || !description || !user_id) {
+  if (!title || !description) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -43,7 +58,33 @@ app.post("/api/projects", async (req, res) => {
 });
 
 /**
- * Fetch all projects with like & comment counts
+ * Update user profile (protected)
+ */
+app.patch("/api/profile", authenticateToken, async (req, res) => {
+  const user_id = req.user.id;
+  const { email, password } = req.body;
+
+  const updates = {};
+  if (email) updates.email = email;
+
+  if (password) {
+    // Hash new password before updating
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updates.password = hashedPassword;
+  }
+
+  const { data, error } = await supabase
+    .from("users")
+    .update(updates)
+    .eq("id", user_id)
+    .select();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ message: "Profile updated successfully", user: data[0] });
+});
+
+/**
+ * Fetch all projects with like & comment counts (public)
  */
 app.get("/api/projects", async (req, res) => {
   try {
@@ -53,7 +94,6 @@ app.get("/api/projects", async (req, res) => {
 
     if (projectsError) throw projectsError;
 
-    // For each project, get like & comment counts
     const projectsWithCounts = await Promise.all(
       projects.map(async (project) => {
         const { count: likeCount } = await supabase
@@ -81,18 +121,13 @@ app.get("/api/projects", async (req, res) => {
 });
 
 /**
- * Like a project with duplicate check
+ * Like a project (protected)
  */
-app.post("/api/projects/:id/like", async (req, res) => {
-  const { user_id } = req.body;
+app.post("/api/projects/:id/like", authenticateToken, async (req, res) => {
+  const user_id = req.user.id; // from token
   const { id } = req.params;
 
-  if (!user_id) {
-    return res.status(400).json({ error: "Missing user_id" });
-  }
-
   try {
-    // Check if the like already exists
     const { data: existingLike, error: fetchError } = await supabase
       .from("likes")
       .select("*")
@@ -108,7 +143,6 @@ app.post("/api/projects/:id/like", async (req, res) => {
       return res.status(400).json({ error: "Already liked" });
     }
 
-    // Insert the new like only if not existing
     const { error: insertError } = await supabase
       .from("likes")
       .insert([{ project_id: id, user_id }]);
@@ -123,16 +157,16 @@ app.post("/api/projects/:id/like", async (req, res) => {
   }
 });
 
-
 /**
- * Add a comment
+ * Add a comment (protected)
  */
-app.post("/api/projects/:id/comment", async (req, res) => {
-  const { user_id, content } = req.body;
+app.post("/api/projects/:id/comment", authenticateToken, async (req, res) => {
+  const user_id = req.user.id; // from token
+  const { content } = req.body;
   const { id } = req.params;
 
-  if (!user_id || !content) {
-    return res.status(400).json({ error: "Missing user_id or content" });
+  if (!content) {
+    return res.status(400).json({ error: "Missing content" });
   }
 
   const { error } = await supabase
