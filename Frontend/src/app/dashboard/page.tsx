@@ -13,6 +13,13 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { Bot, Book } from 'lucide-react';
 import { Pencil } from "lucide-react"; // add this import
+import { 
+  Home,         // for Dashboard
+  FileText,     // for Assessment Lists (like a note or list)
+  MessageSquare, // for AI Chat
+  User,        // for Meditation (lotus flower icon)
+  BookOpen,     // for Personal Diary
+} from 'lucide-react';
 
 
 // Define interface for assessment data
@@ -199,14 +206,14 @@ export default function DashboardPage() {
 
   const lastAssessment = assessments[assessments.length - 1];
 
-  const modules = [
-    { id: 'Dashboard', icon: '🏠', href: '/' },
-    { id: 'Assessment Lists', icon: '📝', href: '/assessmentlist' },
-    { id: 'AI Chat', icon: '💬', href: '/ai' },
-    { id: 'Meditation', icon: '🧘', href: '/meditation' },
-    { id: 'Personal Diary', icon: '📔', href: '/diary' },
-    { id: 'Resources', icon: '📚', href: '/resources' },
-  ];
+const modules = [
+  { id: 'Dashboard', icon: <Home size={20} />, href: '/' },
+  { id: 'Assessment Lists', icon: <FileText size={20} />, href: '/assessmentlist' },
+  { id: 'AI Chat', icon: <MessageSquare size={20} />, href: '/ai' },
+  { id: 'Meditation', icon: <User size={20} />, href: '/meditation' },
+  { id: 'Personal Diary', icon: <Pencil size={20} />, href: '/PersonalDiary' },
+  { id: 'Resources', icon: <Book size={20} />, href: '/resources' },
+];
 
   const handleModuleClick = (m: { id: string; href?: string }) => {
     setActiveModule(m.id);
@@ -449,7 +456,7 @@ export default function DashboardPage() {
       A private space to write your reflections, thoughts, and feelings.
     </p>
 
-    <Button size="lg" onClick={() => alert('Start writing clicked (demo)')}>
+    <Button size="lg" onClick={() => router.push('/PrivateDiary')}>
       Start Writing
     </Button>
   </CardContent>

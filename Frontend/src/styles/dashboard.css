@@ -209,7 +209,7 @@ body{
 
 /* Crisis */
 .crisis-box{ display:flex; flex-direction:column; gap:12px; }
-.crisis-text{ color:#7f1d1d; font-weight:700; }
+.crisis-text{ color:#000000; font-weight:700; }
 .crisis-phones{ color:var(--muted); display:flex; gap:12px; }
 .crisis-actions{ display:flex; gap:8px; margin-top:8px; }
 
