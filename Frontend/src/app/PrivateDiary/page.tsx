@@ -51,7 +51,7 @@ Make sure to highlight positive aspects and offer encouragement, being kind and 
     <LogOut className="btn-icon-small" />
         Exit
     </Button>
-  <h1 className="page-title">Private Diary</h1>
+  <h1 className="page-title">Personal Diary</h1>
   <p className="page-meta">Reflect on your day and let AI help you gain insights</p>
   <textarea
     className="diary-textarea"
