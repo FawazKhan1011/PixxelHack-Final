@@ -1,0 +1,155 @@
+/* Wellness-themed Assessment List Page */
+body {
+  background: var(--gradient-calm);
+  margin: 0; /* good to reset */
+  min-height: 100vh;
+}
+:root {
+    background-color: var(--gradient-calm);
+  /* Wellness palette */
+  --wellness-primary: hsl(280, 75%, 60%);
+  --wellness-primary-light: hsl(285, 85%, 85%);
+  --wellness-primary-dark: hsl(275, 65%, 45%);
+  --wellness-secondary: hsl(320, 50%, 85%);
+  --wellness-muted-bg: hsl(300, 20%, 95%);
+  --wellness-border: hsl(300, 20%, 90%);
+  --wellness-text: hsl(222, 84%, 5%);
+  --wellness-text-muted: hsl(280, 15%, 45%);
+  --wellness-bg: hsl(0, 0%, 100%);
+  --wellness-shadow: 0 10px 40px -10px hsla(280, 75%, 60%, 0.15);
+  --wellness-shadow-soft: 0 2px 10px hsla(280, 75%, 60%, 0.1);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --gradient-calm: linear-gradient(180deg, hsl(285, 85%, 95%) 0%, hsl(300, 70%, 98%) 100%);
+}
+
+/* Main container */
+.ya-page.ya-assessment-list {
+  min-height: 100vh;
+  background: var(--gradient-calm);
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--wellness-text);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header section */
+.page-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  color: var(--wellness-primary-dark);
+}
+
+.page-header h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: var(--wellness-text-muted);
+  margin: 0;
+}
+
+/* Cards container */
+.assessment-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto 2rem;
+}
+
+/* Individual assessment card */
+.assessment-card {
+  background: var(--wellness-bg);
+  border-radius: 1rem;
+  box-shadow: var(--wellness-shadow-soft);
+  border: 1px solid var(--wellness-border);
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+  overflow: hidden;
+}
+
+.assessment-card:hover {
+  box-shadow: var(--wellness-shadow);
+  transform: translateY(-4px);
+}
+
+/* Card header */
+.assessment-card > .ui-card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--wellness-border);
+  background: var(--wellness-primary-light);
+  color: var(--wellness-primary-dark);
+  font-weight: 700;
+  font-size: 1.25rem;
+  user-select: none;
+}
+
+/* Card content */
+.assessment-card > .ui-card-content {
+  padding: 1rem 1.5rem 1.5rem;
+  color: var(--wellness-text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Description text */
+.assessment-description {
+  margin-bottom: 1rem;
+  color: var(--wellness-text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+/* Footer with link and button */
+.assessment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+/* Official link style */
+.official-link {
+  color: var(--wellness-primary);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  font-size: 0.9rem;
+  flex-grow: 1;
+  transition: var(--transition-smooth);
+}
+
+.official-link:hover,
+.official-link:focus {
+  border-color: var(--wellness-primary-dark);
+  outline: none;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .page-header h1 { 
+    font-size: 1.8rem;
+  }
+
+  .assessment-card > .ui-card-header {
+    font-size: 1.1rem;
+  }
+}

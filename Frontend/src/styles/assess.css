@@ -4,8 +4,9 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(to right, #de93fa, #cbbef8, #dee6f9, #96e3f9); /* purple-500, pink-500, blue-500 */
+}button:hover {
+  cursor: pointer;
 }
-
 .assess-container {
   max-width: 36rem;
   width: 100%;

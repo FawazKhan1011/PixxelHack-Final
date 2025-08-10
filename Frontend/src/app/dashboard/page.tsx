@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState, useRef } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,11 +9,9 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ThemeToggle } from '../components/theme-toggle';
 import '../../styles/dashboard.css';
-import Chatimg from "../../img/chat.png";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
-import { Bot } from 'lucide-react';
-import { Book } from "lucide-react"; // make sure to import Book icon
+import { Bot, Book } from 'lucide-react';
 
 // Define interface for assessment data
 interface Assessment {
@@ -20,6 +19,159 @@ interface Assessment {
   score: number;
   severity: string;
   created_at?: string;
+}
+
+function EditableTasksCard() {
+  const [tasks, setTasks] = useState([
+    { id: 1, text: '60s breathing', completed: false },
+    { id: 2, text: 'Drink a glass of water', completed: false },
+    { id: 3, text: '5-minute walk', completed: false },
+  ]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingId !== null && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingId]);
+
+  const toggleComplete = (id: number) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  const startEditing = (id: number) => setEditingId(id);
+
+  const saveTaskText = (id: number, text: string) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, text: text.trim() || task.text } : task
+      )
+    );
+    setEditingId(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: number) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
+  const clearAll = () => setTasks([]);
+
+  const addTask = () => {
+    const newId = tasks.length ? Math.max(...tasks.map((t) => t.id)) + 1 : 1;
+    setTasks([...tasks, { id: newId, text: 'New task', completed: false }]);
+    setEditingId(newId);
+  };
+
+  return (
+    <motion.section
+      layout
+      className="ya-card tasks-card"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.35 }}
+    >
+      <CardHeader>
+        <CardTitle>Today&apos;s Mini Tasks</CardTitle>
+        <p className="card-sub">Small actions to feel better</p>
+      </CardHeader>
+
+      <CardContent
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '280px',
+        }}
+      >
+        <ul
+          className="tasks-list"
+          style={{
+            flex: '1 1 auto',
+            overflowY: 'auto',
+            paddingLeft: 0,
+            margin: 0,
+            listStyle: 'none',
+          }}
+        >
+          {tasks.map(({ id, text, completed }) => (
+            <li
+              key={id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '0.5rem',
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={completed}
+                onChange={() => toggleComplete(id)}
+                aria-label={`Mark task ${text} as completed`}
+              />
+              {editingId === id ? (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={text}
+                  onChange={(e) =>
+                    setTasks((prev) =>
+                      prev.map((task) =>
+                        task.id === id ? { ...task, text: e.target.value } : task
+                      )
+                    )
+                  }
+                  onBlur={(e) => saveTaskText(id, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, id)}
+                  style={{ flex: 1 }}
+                />
+              ) : (
+                <span
+                  onClick={() => startEditing(id)}
+                  style={{
+                    flex: 1,
+                    textDecoration: completed ? 'line-through' : 'none',
+                  }}
+                >
+                  {text}
+                </span>
+              )}
+            </li>
+          ))}
+          {tasks.length === 0 && (
+            <li style={{ textAlign: 'center', color: '#666', marginTop: '1rem' }}>
+              No tasks. Add some!
+            </li>
+          )}
+        </ul>
+
+        <div
+          className="tasks-cta"
+          style={{
+            marginTop: '1rem',
+            flexShrink: 0,
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Button variant="outline" onClick={clearAll} disabled={tasks.length === 0}>
+            Clear All
+          </Button>
+          <Button onClick={addTask}>Add Task</Button>
+        </div>
+      </CardContent>
+    </motion.section>
+  );
 }
 
 export default function DashboardPage() {
@@ -30,25 +182,24 @@ export default function DashboardPage() {
   const [activeModule, setActiveModule] = useState<string>('Dashboard');
 
   useEffect(() => {
-  if (user) {
-    const stored = localStorage.getItem(`assessment_${user.id}`) || '[]';
-    const parsed: Assessment[] = JSON.parse(stored).map((item: Partial<Assessment>) => ({
-  type: item.type === "PHQ-9" ? "PHQ-9" : "GAD-7",
-  score: item.score ?? 0,
-  severity: item.severity ?? "",
-  created_at: item.created_at ?? new Date().toISOString()
-}));
+    if (user) {
+      const stored = localStorage.getItem(`assessment_${user.id}`) || '[]';
+      const parsed: Assessment[] = JSON.parse(stored).map((item: Partial<Assessment>) => ({
+        type: item.type === "PHQ-9" ? "PHQ-9" : "GAD-7",
+        score: item.score ?? 0,
+        severity: item.severity ?? "",
+        created_at: item.created_at ?? new Date().toISOString()
+      }));
 
-    setAssessments(parsed);
-  }
-}, [user]);
-
+      setAssessments(parsed);
+    }
+  }, [user]);
 
   const lastAssessment = assessments[assessments.length - 1];
 
   const modules = [
     { id: 'Dashboard', icon: '🏠', href: '/' },
-    { id: 'Quick Assessment', icon: '📝', href: '/assess' },
+    { id: 'Quick Assessment', icon: '📝', href: '/assessmentlist' },
     { id: 'AI Chat', icon: '💬', href: '/ai' },
     { id: 'Meditation', icon: '🧘', href: '/meditation' },
     { id: 'Personal Diary', icon: '📔', href: '/diary' },
@@ -74,13 +225,6 @@ export default function DashboardPage() {
       <aside className={`ya-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="ya-sidebar-top">
           <div className="ya-logo-text">{sidebarOpen ? 'You Matter' : 'YM'}</div>
-          {/* <button
-            className="ya-collapse-btn"
-            onClick={() => setSidebarOpen((s) => !s)}
-            aria-label="Toggle sidebar"
-          >
-            {sidebarOpen ? '«' : '☰'}
-          </button> */}
         </div>
 
         <nav className="ya-nav">
@@ -106,7 +250,6 @@ export default function DashboardPage() {
         </div>
       </aside>
 
-
       <main className="ya-main">
         <header className="ya-header">
           <motion.div
@@ -118,13 +261,13 @@ export default function DashboardPage() {
           </motion.div>
 
           <div className="ya-header-right flex items-center gap-4">
-  <Button>
-    <Link href="/assess">Start Quick Check</Link>
-  </Button>
-  <div className="userbutton">
-    <UserButton />
-  </div>
-</div>
+            <Button>
+              <Link href="/assess">Start Quick Check</Link>
+            </Button>
+            <div className="userbutton">
+              <UserButton />
+            </div>
+          </div>
         </header>
 
         <section className="ya-grid">
@@ -182,108 +325,109 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.05 }}
           >
-              <Card className="max-w-md mx-auto text-center p-4">
-  {/* Heading */}
-  <h2 className="text-2xl font-bold mb-2">You Matter Chatbot</h2>
+            <Card className="max-w-md mx-auto text-center p-4">
+              {/* Heading */}
+              <h2 className="text-2xl font-bold mb-2">You Matter Chatbot</h2>
 
-  {/* Logo */}
-<center>
-  <Bot 
-  width={64}
-  height={100}
-  className="avatar-icon" />
-</center>
+              {/* Logo */}
+              <center>
+                <Bot
+                  width={64}
+                  height={100}
+                  className="avatar-icon" />
+              </center>
 
-  {/* Start Chat Button */}
-  <Button 
-    className="mb-4 w-full" 
-    size="lg"
-    onClick={() => window.location.assign('/ai')}
-  >
-    Start Chat
-  </Button>
+              {/* Start Chat Button */}
+              <Button
+                className="mb-4 w-full"
+                size="lg"
+                onClick={() => window.location.assign('/ai')}
+              >
+                Start Chat
+              </Button>
 
-  {/* Quick Prompts */}
-  <p className="text-sm text-muted-foreground mb-2">Try quick prompts:</p>
-  <div className="flex flex-wrap justify-center gap-2">
-    {["Breathing Techniques", "Coping Tips", "7-day Plan for Stress Relief"].map((prompt) => (
-      <Button 
-        key={prompt}
-        size="sm"
-        variant="secondary"
-        onClick={() => router.push(`/ai?q=${encodeURIComponent(prompt)}`)}
-      >{prompt}
-      </Button>
-    ))}
-  </div>
-</Card>
+              {/* Quick Prompts */}
+              <p className="text-sm text-muted-foreground mb-2">Try quick prompts:</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {["Breathing Techniques", "Coping Tips", "7-day Plan for Stress Relief"].map((prompt) => (
+                  <Button
+                    key={prompt}
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => router.push(`/ai?q=${encodeURIComponent(prompt)}`)}
+                  >{prompt}
+                  </Button>
+                ))}
+              </div>
+            </Card>
           </motion.section>
-<motion.section
-  layout
-  className="ya-card meditation-card"
-  initial={{ opacity: 0, y: 6 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.4, delay: 0.05 }}
->
-  <Card className="max-w-md mx-auto text-center p-4">
-    {/* Heading */}
-    <h2 className="text-2xl font-bold mb-2">Meditation</h2>
 
-    {/* Lottie / Animation Placeholder */}
-    <div
-      className="lottie-placeholder mb-4"
-      role="img"
-      aria-label="Breathing animation placeholder"
-    >
-      
-      <div className="breath-ring" />
-      <br />
-      <div className="breath-text">Breathe in... out</div>
-    </div>
-    
-    {/* Description */}
-    <p className="text-sm text-muted-foreground mb-4">
-      Practice your meditation now with deep breathing and mindful focus.
-    </p>
+          <motion.section
+            layout
+            className="ya-card meditation-card"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+          >
+            <Card className="max-w-md mx-auto text-center p-4">
+              {/* Heading */}
+              <h2 className="text-2xl font-bold mb-2">Meditation</h2>
 
-    {/* Start Meditation Button */}
-    <Button
-      size="lg"
-      className="w-full"
-      onClick={() => window.location.assign('/meditation')}
-    >
-      Begin Meditation
-    </Button>
-  </Card>
-</motion.section>
+              {/* Lottie / Animation Placeholder */}
+              <div
+                className="lottie-placeholder mb-4"
+                role="img"
+                aria-label="Breathing animation placeholder"
+              >
 
-<motion.section
-  layout
-  className="ya-card resources-card"
-  initial={{ opacity: 0, y: 6 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.5, delay: 0.15 }}
->
-  <CardHeader style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-    <Book className="book-icon" size={24} />
-    <div>
-      <CardTitle>Resources</CardTitle>
-      <p className="card-sub">Curated articles, helplines & videos</p>
-    </div>
-  </CardHeader>
+                <div className="breath-ring" />
+                <br />
+                <div className="breath-text">Breathe in... out</div>
+              </div>
 
-  <CardContent>
-    <div className="resource-detail-text" style={{ marginBottom: "1rem" }}>
-      Articles and resources to support your wellness journey.
-    </div>
+              {/* Description */}
+              <p className="text-sm text-muted-foreground mb-4">
+                Practice your meditation now with deep breathing and mindful focus.
+              </p>
 
-    <div className="resource-cta">
-      <Button onClick={() => window.location.assign('/resources')}>
-        Open Library
-      </Button>
-    </div>
-  </CardContent>
-</motion.section>
+              {/* Start Meditation Button */}
+              <Button
+                size="lg"
+                className="w-full"
+                onClick={() => window.location.assign('/meditation')}
+              >
+                Begin Meditation
+              </Button>
+            </Card>
+          </motion.section>
+
+          <motion.section
+            layout
+            className="ya-card resources-card"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+          >
+            <CardHeader style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Book className="book-icon" size={24} />
+              <div>
+                <CardTitle>Resources</CardTitle>
+                <p className="card-sub">Curated articles, helplines & videos</p>
+              </div>
+            </CardHeader>
+
+            <CardContent>
+              <div className="resource-detail-text" style={{ marginBottom: "1rem" }}>
+                Articles and resources to support your wellness journey.
+              </div>
+
+              <div className="resource-cta">
+                <Button onClick={() => window.location.assign('/resources')}>
+                  Open Library
+                </Button>
+              </div>
+            </CardContent>
+          </motion.section>
 
           <motion.section
             layout
@@ -306,68 +450,46 @@ export default function DashboardPage() {
           </motion.section>
 
           <motion.section
-  layout
-  className="ya-card crisis-card"
-  initial={{ opacity: 0, y: 6 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.65, delay: 0.3 }}
->
-  <CardHeader>
-    <CardTitle>Crisis & Safety</CardTitle>
-    <p className="card-sub">Immediate help & hotlines</p>
-  </CardHeader>
-  <CardContent>
-    <div className="crisis-box">
-      <div className="crisis-text">
-        If you feel unsafe or are thinking of harming yourself, call your local emergency number immediately.
-      </div>
-      <div className="crisis-phones">
-        <div><strong>India:</strong> 112</div>
-        <div><strong>Global:</strong> See resources</div>
-      </div>
-      <div className="crisis-actions">
-        <Button
-  onClick={() => {
-    // For mobile devices, open the dialer
-    window.location.href = 'tel:112'; 
-  }}
->
-  Call Now
-</Button>
-
-  <Button
-    onClick={() => router.push('/resources/crisis-help')}
-  >
-    Get Help
-  </Button>
-      </div>
-    </div>
-  </CardContent>
-</motion.section>
-
-
-          <motion.section
             layout
-            className="ya-card tasks-card"
+            className="ya-card crisis-card"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.35 }}
+            transition={{ duration: 0.65, delay: 0.3 }}
           >
             <CardHeader>
-              <CardTitle>Today&apos;s Mini Tasks</CardTitle>
-              <p className="card-sub">Small actions to feel better</p>
+              <CardTitle>Crisis & Safety</CardTitle>
+              <p className="card-sub">Immediate help & hotlines</p>
             </CardHeader>
             <CardContent>
-              <ul className="tasks-list">
-                <li><input type="checkbox" /> 60s breathing</li>
-                <li><input type="checkbox" /> Drink a glass of water</li>
-                <li><input type="checkbox" /> 5-minute walk</li>
-              </ul>
-              <div className="tasks-cta">
-                <Button onClick={() => alert('Mark all done (demo)')}>Complete</Button>
+              <div className="crisis-box">
+                <div className="crisis-text">
+                  If you feel unsafe or are thinking of harming yourself, call your local emergency number immediately.
+                </div>
+                <div className="crisis-phones">
+                  <div><strong>India:</strong> 112</div>
+                  <div><strong>Global:</strong> See resources</div>
+                </div>
+                <div className="crisis-actions">
+                  <Button
+                    onClick={() => {
+                      window.location.href = 'tel:112';
+                    }}
+                  >
+                    Call Now
+                  </Button>
+
+                  <Button
+                    onClick={() => router.push('/resources/crisis-help')}
+                  >
+                    Get Help
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </motion.section>
+
+          {/* New Editable Tasks Card */}
+          <EditableTasksCard />
         </section>
       </main>
     </div>
