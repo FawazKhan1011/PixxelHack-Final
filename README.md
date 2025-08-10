@@ -35,4 +35,4 @@ Modern life brings numerous mental health challenges including stress, anxiety, 
 
 ---
 
-Live Demon :- https://you-matter-xi.vercel.app/
+Live Demo :- https://you-matter-xi.vercel.app/
