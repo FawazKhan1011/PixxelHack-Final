@@ -12,6 +12,8 @@ import '../../styles/dashboard.css';
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { Bot, Book } from 'lucide-react';
+import { Pencil } from "lucide-react"; // add this import
+
 
 // Define interface for assessment data
 interface Assessment {
@@ -199,7 +201,7 @@ export default function DashboardPage() {
 
   const modules = [
     { id: 'Dashboard', icon: '🏠', href: '/' },
-    { id: 'Quick Assessment', icon: '📝', href: '/assessmentlist' },
+    { id: 'Assessment Lists', icon: '📝', href: '/assessmentlist' },
     { id: 'AI Chat', icon: '💬', href: '/ai' },
     { id: 'Meditation', icon: '🧘', href: '/meditation' },
     { id: 'Personal Diary', icon: '📔', href: '/diary' },
@@ -421,7 +423,7 @@ export default function DashboardPage() {
                 Articles and resources to support your wellness journey.
               </div>
 
-              <div className="resource-cta">
+              <div className="resource-cta" style={{ marginTop: '4rem' }}>
                 <Button onClick={() => window.location.assign('/resources')}>
                   Open Library
                 </Button>
@@ -430,24 +432,28 @@ export default function DashboardPage() {
           </motion.section>
 
           <motion.section
-            layout
-            className="ya-card diary-card"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.2 }}
-          >
-            <CardHeader>
-              <CardTitle>Personal Diary</CardTitle>
-              <p className="card-sub">Private space to journal</p>
-            </CardHeader>
-            <CardContent>
-              <textarea className="diary-input" placeholder="Write a quick reflection..."></textarea>
-              <div className="diary-actions">
-                <Button onClick={() => alert('Saved (demo)')}>Save</Button>
-                <Button variant="ghost" onClick={() => alert('Export PDF (demo)')}>Export</Button>
-              </div>
-            </CardContent>
-          </motion.section>
+  layout
+  className="ya-card diary-card"
+  initial={{ opacity: 0, y: 6 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.55, delay: 0.2 }}
+>
+<CardHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+  <CardTitle>Personal Diary</CardTitle>
+</CardHeader>
+
+  <CardContent style={{ textAlign: 'center', paddingTop: '1rem', paddingBottom: '1.5rem' }}>
+    <center><Pencil color="black" size={48} style={{ marginBottom: '1rem' }} /></center>
+
+    <p className="card-sub" style={{ marginBottom: '1.5rem', color: 'var(--muted-foreground)' }}>
+      A private space to write your reflections, thoughts, and feelings.
+    </p>
+
+    <Button size="lg" onClick={() => alert('Start writing clicked (demo)')}>
+      Start Writing
+    </Button>
+  </CardContent>
+</motion.section>
 
           <motion.section
             layout
