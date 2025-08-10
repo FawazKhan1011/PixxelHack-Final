@@ -172,3 +172,59 @@
   outline: 3px solid var(--wellness-primary);
   outline-offset: 3px;
 }
+/* Crisis Help Cards */
+
+.crisis-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch; /* ensure items stretch to fill height */
+}
+
+
+.crisis-card {
+  border: 2px solid var(--wellness-primary-light);
+  box-shadow: var(--shadow-wellness);
+  transition: var(--transition-smooth);
+  background: var(--wellness-card);
+}
+
+.crisis-card:hover {
+  border-color: var(--wellness-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.crisis-card p {
+  margin: 0.5rem 0;
+  color: var(--wellness-text-muted);
+}
+
+.crisis-card a.resource-link {
+  color: var(--wellness-primary-dark);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.crisis-cta {
+  margin-top: 2rem;
+  text-align: center;
+}
+.resource-card, .crisis-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* make the card fill the grid cell */
+}
+
+.resource-card > div, .crisis-card > div {
+  flex-grow: 1; /* make card content stretch */
+  display: flex;
+  flex-direction: column;
+}
+
+.resource-card .card-content, .crisis-card .card-content {
+  flex-grow: 1; /* take remaining space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* distribute content vertically */
+}
+

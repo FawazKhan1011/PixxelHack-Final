@@ -306,46 +306,45 @@ export default function DashboardPage() {
           </motion.section>
 
           <motion.section
-            layout
-            className="ya-card mood-card"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-          >
-            <CardHeader>
-              <CardTitle>Mood Timeline</CardTitle>
-              <p className="card-sub">Recent trends</p>
-            </CardHeader>
-            <CardContent>
-              <div className="chart-placeholder">[Mood chart placeholder]</div>
-            </CardContent>
-          </motion.section>
+  layout
+  className="ya-card crisis-card"
+  initial={{ opacity: 0, y: 6 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.65, delay: 0.3 }}
+>
+  <CardHeader>
+    <CardTitle>Crisis & Safety</CardTitle>
+    <p className="card-sub">Immediate help & hotlines</p>
+  </CardHeader>
+  <CardContent>
+    <div className="crisis-box">
+      <div className="crisis-text">
+        If you feel unsafe or are thinking of harming yourself, call your local emergency number immediately.
+      </div>
+      <div className="crisis-phones">
+        <div><strong>India:</strong> 112</div>
+        <div><strong>Global:</strong> See resources</div>
+      </div>
+      <div className="crisis-actions">
+        <Button
+  onClick={() => {
+    // For mobile devices, open the dialer
+    window.location.href = 'tel:112'; 
+  }}
+>
+  Call Now
+</Button>
 
-          <motion.section
-            layout
-            className="ya-card crisis-card"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.3 }}
-          >
-            <CardHeader>
-              <CardTitle>Crisis & Safety</CardTitle>
-              <p className="card-sub">Immediate help & hotlines</p>
-            </CardHeader>
-            <CardContent>
-              <div className="crisis-box">
-                <div className="crisis-text">If you feel unsafe or are thinking of harming yourself, call your local emergency number immediately.</div>
-                <div className="crisis-phones">
-                  <div><strong>India:</strong> 112</div>
-                  <div><strong>Global:</strong> See resources</div>
-                </div>
-                <div className="crisis-actions">
-                  <Button onClick={() => alert('Call now (demo)')}>Call Now</Button>
-                  <Button variant="destructive" onClick={() => alert('Crisis resources (demo)')}>Get Help</Button>
-                </div>
-              </div>
-            </CardContent>
-          </motion.section>
+  <Button
+    onClick={() => router.push('/resources/crisis-help')}
+  >
+    Get Help
+  </Button>
+      </div>
+    </div>
+  </CardContent>
+</motion.section>
+
 
           <motion.section
             layout
