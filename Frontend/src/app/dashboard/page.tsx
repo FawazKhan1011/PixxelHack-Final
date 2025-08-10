@@ -211,7 +211,7 @@ const modules = [
   { id: 'Assessment Lists', icon: <FileText size={20} />, href: '/assessmentlist' },
   { id: 'AI Chat', icon: <MessageSquare size={20} />, href: '/ai' },
   { id: 'Meditation', icon: <User size={20} />, href: '/meditation' },
-  { id: 'Personal Diary', icon: <Pencil size={20} />, href: '/PersonalDiary' },
+  { id: 'Personal Diary', icon: <Pencil size={20} />, href: '/PrivateDiary' },
   { id: 'Resources', icon: <Book size={20} />, href: '/resources' },
 ];
 
